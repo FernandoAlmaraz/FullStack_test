@@ -1,47 +1,45 @@
-import filesModel from "../models/files.js";
+import 'dotenv/config';
+import FileModel from '../models/files.js';
+import FileHelper from '../helpers/zipHelper.js';
+import path from 'path';
 
-class filesController {
-    constructor() {
+const BASE_DIR = path.join(process.cwd(), process.env.BASE_DIR);
 
-    }
+class FileController {
+    async handleZipUpload(req, res) {
+        const { zipUrl } = req.body;
+        if (!zipUrl) return res.status(400).json({ error: 'Missing zipUrl' });
 
-    async create(req, res) {
         try {
-            const data = filesModel.create(req.body);
-            res.status(201).json({ "data": data });
-        } catch (error) {
-            res.status(500).send(error)
+            const outputDir = BASE_DIR;
+            await FileHelper.downloadAndUnzip(zipUrl, outputDir);
+            const files = fs.readdirSync(outputDir);
+            console.log(files);
+            /*
+            const dbRecords = files.map(file => ({
+                name: file,
+                path: path.join(outputDir, file),
+                createdAt: new Date()
+            }));
+            await FileModel.insertFile(dbRecords);
+
+            res.status(200).json({ message: 'ZIP processed successfully', files: dbRecords });
+            */
+            res.status(200).json({ message: 'ZIP processed successfully' });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: 'Error processing ZIP' });
         }
     }
 
-    async getOne(req, res) {
+    async listFiles(req, res) {
         try {
-            res.status(201).json({ status: 'getOne-OK' })
-        } catch (error) {
-            res.status(500).send(error)
-        }
-    }
-
-    async getAll(req, res) {
-        try {
-            res.status(201).json({ status: 'getall-OK' })
-        } catch (error) {
-            res.status(500).send(error)
-        }
-    }
-    async update(req, res) {
-        try {
-            res.status(201).json({ status: 'update-OK' })
-        } catch (error) {
-            res.status(500).send(error)
-        }
-    }
-    async delete(req, res) {
-        try {
-            res.status(201).json({ status: 'del-OK' })
-        } catch (error) {
-            res.status(500).send(error)
+            const files = await FileModel.getAllFiles();
+            res.status(200).json(files);
+        } catch (err) {
+            res.status(500).json({ error: 'Error fetching files' });
         }
     }
 }
-export default new filesController;
+
+export default new FileController();
