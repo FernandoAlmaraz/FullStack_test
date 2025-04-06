@@ -1,66 +1,53 @@
-// Cargar variables de entorno desde el archivo .env
+// Carga variables de entorno desde un archivo .env
 import 'dotenv/config';
-// Importar mongoose para gestionar la conexión a la base de datos MongoDB
+
+// Importa el ODM de MongoDB para Node.js
 import mongoose from 'mongoose';
 
 /**
- * dbClient - Clase encargada de gestionar la conexión a la base de datos MongoDB.
- * 
- * Esta clase maneja la inicialización de la conexión, el manejo de errores de conexión
- * y proporciona un método para acceder a la instancia de la base de datos una vez conectada.
- * 
- * Uso típico:
- * - Primero se llama al método `connect()` para establecer la conexión con la base de datos.
- * - Luego, se puede usar el método `getDb()` para acceder a la base de datos una vez la conexión se ha establecido correctamente.
+ * Clase dbClient
+ * Encapsula la lógica de conexión a MongoDB utilizando Mongoose.
+ * Se implementa como un singleton para mantener una única instancia de conexión en toda la aplicación.
  */
 class dbClient {
-    // Instancia de la base de datos
-    db = null;
+    constructor() {
+        // Almacena la instancia de conexión activa a la base de datos
+        this.db = null;
+    }
 
     /**
-     * Método para establecer la conexión con la base de datos MongoDB.
-     * Utiliza la URI de conexión que se encuentra en las variables de entorno (.env).
-     * 
-     * @async
-     * @throws {Error} Si ocurre un error durante la conexión, se imprime en consola.
+     * Establece la conexión a la base de datos utilizando Mongoose.
+     * La URI de conexión se toma desde las variables de entorno (.env).
      */
     async connect() {
         try {
-            // Obtener la cadena de conexión desde las variables de entorno
             const queryString = process.env.MONGO_URI;
 
-            // Conectar a MongoDB utilizando Mongoose
-            await mongoose.connect(queryString, {
-                useNewUrlParser: true,  // Usar el nuevo analizador de URL de MongoDB
-                useUnifiedTopology: true  // Usar el nuevo motor de conexión de MongoDB
-            });
+            // Conecta con MongoDB utilizando la URI proporcionada
+            await mongoose.connect(queryString);
 
-            // Asignar la conexión activa a la propiedad `db`
+            // Almacena la conexión actual
             this.db = mongoose.connection;
-            console.log("Connected successfully to db");
 
+            console.log("Connected successfully to db");
         } catch (e) {
-            // Manejo de errores: Si la conexión falla, imprimir el error en consola
+            // En caso de error, se captura y muestra en consola
             console.log("Error connecting to DB:", e);
         }
     }
 
     /**
-     * Método para obtener la instancia de la base de datos.
-     * 
-     * @returns {mongoose.Connection} La conexión activa de la base de datos.
-     * @throws {Error} Si se intenta acceder a la base de datos antes de establecer la conexión.
+     * Devuelve la instancia actual de la conexión a la base de datos.
+     * Lanza un error si aún no se ha establecido una conexión.
+     * @returns {mongoose.Connection} Instancia activa de conexión a MongoDB
      */
     getDb() {
-        // Verificar si la base de datos ya ha sido conectada
         if (!this.db) {
-            // Si la conexión no está establecida, lanzar un error
             throw new Error("Database not connected yet.");
         }
-        // Si la conexión está establecida, devolver la instancia de la base de datos
         return this.db;
     }
 }
 
-// Exportar una única instancia de dbClient (patrón Singleton)
+// Exporta una instancia única de la clase para uso global en la aplicación
 export default new dbClient();
