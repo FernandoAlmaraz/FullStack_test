@@ -17,7 +17,7 @@ const app = express();
 app.use(express.json());
 
 // Registra las rutas bajo el prefijo '/file'
-app.use('/file', routefiles);
+app.use('/v1', routefiles);
 
 /**
  * Control de entorno: si no estamos en modo test, arrancamos el servidor de forma normal.

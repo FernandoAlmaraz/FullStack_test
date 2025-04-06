@@ -17,7 +17,7 @@ const route = express.Router();
  * @param {Object} req - La solicitud HTTP que contiene el cuerpo con la URL del archivo ZIP.
  * @param {Object} res - La respuesta HTTP para enviar de vuelta al cliente.
  */
-route.post('/', FileController.processZipInfo);  // Ruta que procesa la URL del ZIP
+route.post('/addFolder', FileController.processZipInfo);  // Ruta que procesa la URL del ZIP
 
 /**
  * Ruta GET para obtener todos los registros de carpetas.
@@ -30,7 +30,7 @@ route.post('/', FileController.processZipInfo);  // Ruta que procesa la URL del 
  * @param {Object} req - La solicitud HTTP (en este caso no se utiliza cuerpo, solo el endpoint).
  * @param {Object} res - La respuesta HTTP para enviar la lista de carpetas.
  */
-route.get('/', FileController.getAllFolders);  // Ruta que obtiene todas las carpetas
+route.get('/showFolders', FileController.getAllFolders);  // Ruta que obtiene todas las carpetas
 
 // Exportamos la ruta para ser utilizada en la aplicación principal.
 export default route;
