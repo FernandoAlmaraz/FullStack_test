@@ -1,0 +1,31 @@
+services:
+  backend:
+    container_name: backend
+    build:
+      context: .  # El contexto es el directorio actual
+      dockerfile: Dockerfile  # Usamos el Dockerfile para crear la imagen
+    ports:
+      - "5100:5100"  # Expone el puerto 5100 del contenedor
+    volumes:
+      - .:/app  # Monta tu código local dentro del contenedor
+      - /app/node_modules  # No sobrescribir los node_modules dentro del contenedor
+    environment:
+      - MONGO_URI=mongodb://admin:secret@mongodb:27017  # URI de conexión a MongoDB
+      - PORT=5100  # Puerto donde se ejecutará la app
+    depends_on:
+      - mongodb  # Asegura que MongoDB se inicie antes que la app
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest  # Usa la imagen más reciente de MongoDB
+    ports:
+      - "27017:27017"  # Expone el puerto de MongoDB
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin  # Usuario root
+      - MONGO_INITDB_ROOT_PASSWORD=secret  # Contraseña root
+    volumes:
+      - mongodb_data:/data/db  # Persistencia de los datos de MongoDB
+
+volumes:
+  mongodb_data:
+    driver: local  # Usa almacenamiento local para MongoDB
