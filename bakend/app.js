@@ -10,13 +10,19 @@ import routefiles from './routes/files.js';
 // Importa el cliente de conexión a la base de datos MongoDB
 import dbClient from './config/dbClient.js';
 
+// Importa la configuración de Swagger
+import setupSwagger from './config/swagger.js';
+
 // Crea una instancia de la aplicación Express
 const app = express();
 
 // Middleware para parsear el cuerpo de las solicitudes en formato JSON
 app.use(express.json());
 
-// Registra las rutas bajo el prefijo '/file'
+// Configuración de Swagger: añade la documentación de la API en la ruta '/api-docs'
+setupSwagger(app);
+
+// Registra las rutas bajo el prefijo '/v1'
 app.use('/v1', routefiles);
 
 /**

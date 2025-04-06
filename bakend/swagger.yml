@@ -1,0 +1,135 @@
+openapi: 3.0.0
+info:
+  title: ZIP Processor API
+  version: 1.0.0
+  description: API para descargar y procesar archivos ZIP y gestionar carpetas
+
+paths:
+  /v1/addFolder:
+    post:
+      summary: Procesar archivo ZIP y crear carpeta
+      description: Crea una nueva carpeta con los archivos extraídos de un ZIP descargado de una url, los descomprime y guarda en el sistema de archivos, guarda los nombres y los paths de los archivos
+      operationId: addFolder
+      tags:
+        - Folders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                zipUrl:
+                  type: string
+                  format: uri
+                  example: "https://www.federicoperichon.com.ar/descargas/plantilla_HTML.zip"
+              required:
+                - zipUrl
+      responses:
+        '200':
+          description: ZIP procesado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "ZIP processed successfully"
+                  folder:
+                    $ref: '#/components/schemas/Folder'
+              example:
+                message: "ZIP processed successfully"
+                folder:
+                  _id: "67f1e2e85580a6194e9d9dfa"
+                  name: "plantilla_HTML"
+                  files:
+                    - fileName: "crossdomain.xml"
+                      path: "X:\\ENGAGED\\FullStack_test\\bakend\\spaces\\plantilla_HTML\\crossdomain.xml"
+                      _id: "67f1e2e85580a6194e9d9dfb"
+                    - fileName: "index.html"
+                      path: "X:\\ENGAGED\\FullStack_test\\bakend\\spaces\\plantilla_HTML\\index.html"
+                      _id: "67f1e2e85580a6194e9d9dfc"
+                  createdAt: "2025-04-06T02:11:52.586Z"
+                  updatedAt: "2025-04-06T02:11:52.586Z"
+                  __v: 0
+        '400':
+          description: Error en la solicitud
+        '500':
+          description: Error interno del servidor
+
+  /v1/showFolders:
+    get:
+      summary: Obtener todas las carpetas
+      description: Retorna el listado completo de carpetas procesadas y sus archivos.
+      operationId: showFolders
+      tags:
+        - Folders
+      responses:
+        '200':
+          description: Listado de carpetas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Folder'
+              example:
+                - _id: "67f1ccded49c43b2eceedd3f"
+                  name: "plantilla_HTML"
+                  files:
+                    - fileName: "crossdomain.xml"
+                      path: "X:\\ENGAGED\\FullStack_test\\bakend\\spaces\\plantilla_HTML\\crossdomain.xml"
+                      _id: "67f1ccded49c43b2eceedd40"
+                    - fileName: "index.html"
+                      path: "X:\\ENGAGED\\FullStack_test\\bakend\\spaces\\plantilla_HTML\\index.html"
+                      _id: "67f1ccded49c43b2eceedd41"
+                  createdAt: "2025-04-06T00:37:50.588Z"
+                  updatedAt: "2025-04-06T00:37:50.588Z"
+                  __v: 0
+                - _id: "67f1e2e85580a6194e9d9dfa"
+                  name: "plantilla_HTML"
+                  files:
+                    - fileName: "crossdomain.xml"
+                      path: "X:\\ENGAGED\\FullStack_test\\bakend\\spaces\\plantilla_HTML\\crossdomain.xml"
+                      _id: "67f1e2e85580a6194e9d9dfb"
+                    - fileName: "index.html"
+                      path: "X:\\ENGAGED\\FullStack_test\\bakend\\spaces\\plantilla_HTML\\index.html"
+                      _id: "67f1e2e85580a6194e9d9dfc"
+                  createdAt: "2025-04-06T02:11:52.586Z"
+                  updatedAt: "2025-04-06T02:11:52.586Z"
+                  __v: 0
+
+components:
+  schemas:
+    Folder:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: mongo-id
+        name:
+          type: string
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        __v:
+          type: integer
+
+    File:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: mongo-id
+        fileName:
+          type: string
+        path:
+          type: string
