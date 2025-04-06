@@ -1,18 +1,20 @@
 import 'dotenv/config';
-import { MongoClient } from 'mongodb';
+import mongoose from 'mongoose';
 
 class dbClient {
     constructor() {
-        const queryString = process.env.MONGO_URI;
-        this.client = new MongoClient(queryString);
         this.db = null;
     }
 
     async connect() {
         try {
-            await this.client.connect();
-            this.db = this.client.db('test');
+            const queryString = process.env.MONGO_URI;
+
+            await mongoose.connect(queryString);
+
+            this.db = mongoose.connection;
             console.log("Connected successfully to db");
+
         } catch (e) {
             console.log("Error connecting to DB:", e);
         }

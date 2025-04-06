@@ -24,22 +24,56 @@ class FileHelper {
     }
 
     static async unzipFile(zipPath, outputDir) {
-        try {
-            const directory = fs.createReadStream(zipPath).pipe(unzipper.Extract({ path: outputDir }));
-            directory.on('close', () => {
-                console.log(`Descompresión completada en: ${outputDir}`);
-            });
-        } catch (error) {
-            console.error('Error al descomprimir el archivo:', error);
-        }
+        return new Promise((resolve, reject) => {
+            try {
+                const fileName = path.basename(zipPath, '.zip');
+                const targetDir = path.join(outputDir, fileName);
+
+                if (!fs.existsSync(targetDir)) {
+                    fs.mkdirSync(targetDir, { recursive: true });
+                }
+
+                const htmlAndXmlFiles = [];
+                const directory = fs.createReadStream(zipPath).pipe(unzipper.Extract({ path: targetDir }));
+
+                directory.on('close', () => {
+                    const files = fs.readdirSync(targetDir);
+                    files.forEach(file => {
+                        const filePath = path.join(targetDir, file);
+                        if (file.endsWith('.html') || file.endsWith('.xml')) {
+                            htmlAndXmlFiles.push(filePath);
+                        }
+                    });
+
+                    const result = {
+                        folder: {
+                            name: fileName,
+                            files: htmlAndXmlFiles.map(filePath => ({
+                                fileName: path.basename(filePath),
+                                path: filePath
+                            }))
+                        }
+                    };
+
+                    const json_dir = JSON.stringify(result, null, 2);
+                    resolve(json_dir);
+                });
+
+                directory.on('error', (error) => {
+                    reject(error);
+                });
+            } catch (error) {
+                reject(error);
+            }
+        });
     }
 
     static async downloadAndUnzip(zipUrl, outputDir) {
         try {
             const zipFilePath = await this.downloadFile(zipUrl, outputDir);
 
-            await this.unzipFile(zipFilePath, outputDir);
-            console.log('El archivo ZIP se descargó y descomprimió correctamente');
+            const filePathInfo = await this.unzipFile(zipFilePath, outputDir);
+            return filePathInfo;
         } catch (error) {
             console.error('Error en la descarga o descompresión:', error);
         }
