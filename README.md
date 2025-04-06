@@ -17,9 +17,11 @@ Puedes seguir las instrucciones para instalar Docker desde su [página oficial](
 
 1. **Configuración del entorno local:**
 
-   Asegúrate de que el archivo `.env` esté correctamente configurado con las variables necesarias:
+Asegúrate de que el archivo `.env` esté correctamente configurado con las variables necesarias:
 
-PORT=5100 MONGO_URI='mongodb://admin:secret@mongodb:27017' BASE_DIR='./spaces' NODE_ENV=v1
+PORT=5100 
+MONGO_URI='mongodb://admin:secret@mongodb:27017'
+BASE_DIR='./spaces' NODE_ENV=v1
 
 2. **Dockerfile:**
 
@@ -32,8 +34,8 @@ El `Dockerfile` se utiliza para crear la imagen del contenedor backend, aseguran
 Si aún no tienes el proyecto en tu máquina local, clónalo desde tu repositorio de Git:
 
 ```bash
-git clone <tu-repositorio-url>
-cd <directorio-del-proyecto>
+git clone https://github.com/FernandoAlmaraz/FullStack_test.git
+cd <backend>
 Paso 2: Levantar los contenedores con Docker Compose
 Con Docker y Docker Compose configurados, ejecuta el siguiente comando en tu terminal:
 docker-compose up --build -d
@@ -56,7 +58,12 @@ docker-compose.yml: Define los servicios (backend y MongoDB) y cómo interactúa
 
 Dockerfile: Especifica cómo construir la imagen del contenedor backend.
 
-swagger.yml: Define la documentación de la API con Swagger.
+swagger.yml: Define la documentación de la API con Swagger accede a: .
+## Documentación con Swagger
+El proyecto utiliza [Swagger](https://swagger.io/) para documentar y visualizar la API de forma interactiva. Swagger está configurado con `swagger-ui-express` y el archivo de configuración `swagger.yml`.
+
+Para acceder a la documentación interactiva de la API, simplemente visita el siguiente endpoint en tu navegador: 
+http://localhost:5100/api-docs
 
 .env: Contiene las variables de entorno utilizadas por la aplicación.
 
